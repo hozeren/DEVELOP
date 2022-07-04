@@ -13,7 +13,9 @@ Options:
 """
 
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../analysis/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'analysis/'))
+print(sys.path)
+PATH_FOLDER = "/home/kevin/Desktop/DEVELOP"
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -75,7 +77,7 @@ if __name__ == "__main__":
     if no_filters:
         fragmentations_filt = fragmentations
     else:
-        fragmentations_filt = frag_utils.check_2d_filters_dataset(fragmentations, n_cores=3, pains_smarts_loc="../analysis/wehi_pains.csv", design_task=design_task)
+        fragmentations_filt = frag_utils.check_2d_filters_dataset(fragmentations, n_cores=3, pains_smarts_loc=PATH_FOLDER+"/analysis/wehi_pains.csv", design_task=design_task)
 
     print("Number fragmentations: \t\t%d" % len(fragmentations))
     print("Number passed 2D filters: \t%d" % len(fragmentations_filt))

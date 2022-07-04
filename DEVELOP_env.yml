@@ -90,6 +90,11 @@ dependencies:
   - tensorflow-gpu=1.14.0
   - typing
   - rdkit=2019.03
+  - cairosvg
+  - ipython
+  - matplotlib
+  - conda-build
   - pip:
     - molgrid==0.2.1
     - pyquaternion==0.9.9
+    - chembl_webresource_client
