@@ -208,7 +208,7 @@ class DenseGGNNChemModel(ChemModel):
                 else:
                     new_h_dim=expanded_h_dim
                 for iter_idx in range(self.params['num_timesteps']):
-                    with tf.variable_scope("gru_scope"+scope+str(iter_idx), reuse=False):
+                    with tf.compat.v1.variable_scope("gru_scope"+scope+str(iter_idx), reuse=False):
                         self.weights['edge_weights'+scope+str(iter_idx)] = tf.Variable(glorot_init([self.num_edge_types, new_h_dim, new_h_dim]))
                         if self.params['use_edge_bias']:
                             self.weights['edge_biases'+scope+str(iter_idx)] = tf.Variable(np.zeros([self.num_edge_types, 1, new_h_dim]).astype(np.float32))
@@ -510,11 +510,11 @@ class DenseGGNNChemModel(ChemModel):
             [tf.tile(tf.expand_dims(node_in_focus, 1), [1,v,1]), new_filtered_z_sampled], axis=2) # [b, v, 2*(h+h)]            
         #combine edge repre with local and global repr
         local_graph_repr_before_expansion = tf.reduce_sum(new_filtered_z_sampled, axis=1) /  \
-                                            tf.reduce_sum(self.placeholders['node_mask_'+direc], axis=1, keep_dims=True) # [b, h + h]
+                                            tf.reduce_sum(self.placeholders['node_mask_'+direc], axis=1, keepdims=True) # [b, h + h]
         local_graph_repr = tf.expand_dims(local_graph_repr_before_expansion, 1)        
         local_graph_repr = tf.tile(local_graph_repr, [1,v,1])  # [b, v, h+h]        
         global_graph_repr_before_expansion = tf.reduce_sum(filtered_z_sampled, axis=1) / \
-                                            tf.reduce_sum(self.placeholders['node_mask_'+direc], axis=1, keep_dims=True)
+                                            tf.reduce_sum(self.placeholders['node_mask_'+direc], axis=1, keepdims=True)
         global_graph_repr = tf.expand_dims(global_graph_repr_before_expansion, 1)
         global_graph_repr = tf.tile(global_graph_repr, [1,v,1]) # [b, v, h+h]
         # distance representation
@@ -579,9 +579,9 @@ class DenseGGNNChemModel(ChemModel):
         # edge labels
         edge_labels = tf.concat([edge_labels,tf.expand_dims(local_stop, 1)], axis=1) # [b, v + 1]                
         # softmax for edge
-        edge_loss =- tf.reduce_sum(tf.log(tf.nn.softmax(edge_logits) + SMALL_NUMBER) * edge_labels, axis=1)
+        edge_loss =- tf.reduce_sum(tf.math.log(tf.nn.softmax(edge_logits) + SMALL_NUMBER) * edge_labels, axis=1)
         # softmax for edge type 
-        edge_type_loss =- edge_type_labels * tf.log(edge_type_probs + SMALL_NUMBER) # [b, e, v]
+        edge_type_loss =- edge_type_labels * tf.math.log(edge_type_probs + SMALL_NUMBER) # [b, e, v]
         edge_type_loss = tf.reduce_sum(edge_type_loss, axis=[1, 2]) # [b]
         # total loss
         iteration_loss = edge_loss + edge_type_loss
@@ -668,7 +668,7 @@ class DenseGGNNChemModel(ChemModel):
         
         # Node symbol loss
         self.ops['node_symbol_prob_'+in_direc] = tf.nn.softmax(self.ops['node_symbol_logits_'+in_direc])
-        self.ops['node_symbol_loss_'+in_direc] = -tf.reduce_sum(tf.log(self.ops['node_symbol_prob_'+in_direc] + SMALL_NUMBER) * 
+        self.ops['node_symbol_loss_'+in_direc] = -tf.reduce_sum(tf.math.log(self.ops['node_symbol_prob_'+in_direc] + SMALL_NUMBER) * 
                                                                 self.placeholders['node_symbols_'+out_direc], axis=[1,2])
 
         # Overall losses
