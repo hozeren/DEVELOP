@@ -140,7 +140,7 @@ class ChemModel(object):
         self.placeholders['num_graphs'] = tf.compat.v1.placeholder(tf.int64, [], name='num_graphs')
         self.placeholders['out_layer_dropout_keep_prob'] = tf.compat.v1.placeholder(tf.float32, [], name='out_layer_dropout_keep_prob')
         # whether this session is for generating new graphs or not
-        self.placeholders['is_generative'] = tf.placeholder(tf.bool, [], name='is_generative')
+        self.placeholders['is_generative'] = tf.compat.v1.placeholder(tf.bool, [], name='is_generative')
 
         with tf.compat.v1.variable_scope("graph_model"):
             self.prepare_specific_graph_model()
@@ -422,5 +422,5 @@ class ChemModel(object):
             for var_name in data_to_load['weights']:
                 if var_name not in used_vars:
                     print('Saved weights for %s not used by model.' % var_name)
-            restore_ops.append(tf.variables_initializer(variables_to_initialize))
+            restore_ops.append(tf.compat.v1.variables_initializer(variables_to_initialize))
             self.sess.run(restore_ops)
